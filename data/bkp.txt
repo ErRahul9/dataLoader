@@ -1,0 +1,16 @@
+#MAGNITE_URL="http://bidder.coredev.west2.steelhouse.com/magnite/bidder"
+#POSTGRES_HOST="10.21.1.70"
+#POSTGRES_PORT="5432"
+#POSTGRES_USER="read_only"
+#POSTGRES_PW="read_only"
+#CORE_DATABASE="coredw"
+
+#import os
+
+#os.environ['REDIS_HOST'] = "core-dev-rtb-dev-campaign-rep-group.pid24g.clustercfg.usw2.cache.amazonaws.com"
+#os.environ['REDIS_PORT'] = "6379"
+#os.environ['POSTGRES_USER'] = "qacore"
+#os.environ['POSTGRES_PW'] = "qa#core07#19"
+#os.environ['POSTGRES_HOST'] = "integration-dev.crvrygavls2u.us-west-2.rds.amazonaws.com"
+#os.environ['POSTGRES_PORT'] = "5432"
+#os.environ['POSTGRES_DATABASE'] = "qacoredb"

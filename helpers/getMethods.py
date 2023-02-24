@@ -16,8 +16,9 @@ class getMethods():
 		load_dotenv()
 		self.testObj = testObj
 		# self.fixpath = globals().get("fixtures")
-		self.camp = sys.path[0]
-		self.fixpath = os.path.join(self.camp, "fixtures")
+
+
+
 		# self.camp = globals().get("campaigns")
 		# self.ROOTDIR = globals().get("ROOTDIR")
 		self.ROOTDIR = sys.path[1]

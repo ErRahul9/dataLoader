@@ -8,20 +8,23 @@ from redis.cluster import RedisCluster
 
 class DatabaseConnection:
 
-		def __init__(self, query):
+		def __init__(self,db,host,user,password,port):
 			load_dotenv()
-			self.host = os.environ['POSTGRES_HOST']
-			self.user = os.environ['POSTGRES_USER']
-			self.pwd = os.environ['POSTGRES_PW']
-			self.port = os.environ['POSTGRES_PORT']
-			self.db = os.environ['POSTGRES_DATABASE']
-			self.query = query
+			self.host = host
+			self.user = user
+			self.pwd = password
+			self.port = port
+			self.db = db
 
-		def connectToPostgres(self):
+			#
+
+			# self.query = query
+
+		def connectToPostgres(self,query):
 			conn = psycopg2.connect(database=self.db, user=self.user, password=self.pwd, host=self.host, port=self.port)
 			conn.autocommit = True
 			cursor = conn.cursor()
-			cursor.execute(self.query)
+			cursor.execute(query)
 			results = cursor.fetchall()
 			conn.commit()
 			conn.close()
