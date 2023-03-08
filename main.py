@@ -1,47 +1,78 @@
+import re
+
 from helpers.databaseConn import DatabaseConnection
 from dotenv import load_dotenv
 import os
+from helpers.jsonReader import jsonReader
+from sys import argv
+
+
+
 
 
 class main():
 
     def __init__(self):
-
-
         load_dotenv()
-        self.host = os.environ['CORE_HOST']
-        self.pwd = os.environ['CORE_PW']
-        self.user = os.environ['CORE_USER']
-        self.port = os.environ['CORE_PORT']
-        self.db = os.environ['CORE_DATABASE']
+        self.baseDb = argv[1].upper()
+        self.tgtDb = argv[2].upper()
+        self.baseDate = argv[3]
+        self.tgtDate = argv[4]
+        self.adv_id = argv[5]
 
-        self.reportHost = os.environ['REPORT_HOST']
-        self.reportPort = os.environ['REPORT_PORT']
-        self.reportUser = os.environ['REPORT_USER']
-        self.reportPass = os.environ['REPORT_PW']
-        self.reportDb = os.environ['REPORT_DATABASE']
+    def returnData(self,query,src):
+        host = os.environ['{}_HOST'.format(src.upper())]
+        pwd = os.environ['{}_PW'.format(src.upper())]
+        user = os.environ['{}_USER'.format(src.upper())]
+        port = os.environ['{}_PORT'.format(src.upper())]
+        db = os.environ['{}_DATABASE'.format(src.upper())]
+        sqlData = self.readSql(src)
+        sql = sqlData.get(query).lower()
+        advsql = self.setAdvertiserId(sql)
+        finalSQL = self.setStartEndDate(advsql)
+        return DatabaseConnection(db, host, user, pwd,port).connectToPostgres(finalSQL)
 
 
-    def returnCoreData(self):
-        sql = "select distinct(private_marketplace_id) from summarydata.all_facts WHERE hour >= '2023-02-22 16:00:00' AND hour < '2023-02-23 16:00:00' and advertiser_id = 32286 and private_marketplace_id not in ('-1','-2','-3','-4','-5','-6','-7')"
-        return DatabaseConnection(self.db,self.host,self.user,self.pwd,self.port).connectToPostgres(sql)
+    def setAdvertiserId(self,sql):
+        sqlUpdated = re.sub("\\d{5}",self.adv_id,sql)
+        return sqlUpdated
 
+    def setStartEndDate(self,updatedQuery):
+        if "hour" in updatedQuery.lower():
+            tTime = self.baseDate + " 00:00:00"
+            eTime = self.tgtDate + " 00:00:00"
+            updatedStartTime = re.sub(r">= '2023-02-22 00:00:00'",">= '{}'".format(tTime),updatedQuery)
+            updateQueryTime = re.sub(r"< '2023-02-23 00:00:00'","< '{}'".format(eTime),updatedStartTime)
+        elif "day" in updatedQuery.lower():
+            updatedStartTime = re.sub(r">= '2023-02-22'", ">= '{}'".format(self.baseDate), updatedQuery)
+            updateQueryTime = re.sub(r"< '2023-02-23'", ">= '{}'".format(self.tgtDate), updatedStartTime)
 
-    def returnReportData(self):
-        sql = "select distinct(private_marketplace_id) from  sum_by_private_marketplace_by_day  where DAY IN ('2023-02-23') and advertiser_id = 32286"
-        return DatabaseConnection(self.reportDb,self.reportHost,self.reportUser,self.reportPass,self.reportPort).connectToPostgres(sql)
+        return updateQueryTime
+
+    def readSql(self,datType):
+        jsonObject = jsonReader("data","sqlVals.json").readJson()
+        data =  jsonObject.get(datType)
+        return data
+
+    def setQueryfromParameters(self,query,src):
+        sqlData = self.readSql(src)
+        sql = sqlData.get(query).lower()
+        sqlWithAdv = self.setStartEndDate(self.setAdvertiserId(sql))
+        return sqlWithAdv
+
 
     def dataComp(self):
-        coreD = [data[0] for data in main().returnCoreData()]
-        repD = [info[0] for info in main().returnReportData()]
-        print(coreD)
-        print(repD)
-        missing = [data for data in repD if data not in coreD]
-        common = [data for data in repD if data  in coreD]
-        return missing , common
-
-    # def countMatch(self):
-
+        jsonObjectCore = self.readSql("core")
+        for keys in jsonObjectCore.keys():
+            print(keys)
+            coreD = [data[0] for data in main().returnData(keys,"core")]
+            print(coreD)
+            repD = [info[0] for info in main().returnData(keys,"report")]
+            print(repD)
+            missing = [data for data in repD if data not in coreD]
+            common = [data for data in repD if data  in coreD]
+            print(missing)
+            print(common)
 
 if __name__ == '__main__':
     print(main().dataComp())
