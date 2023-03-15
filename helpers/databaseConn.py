@@ -26,7 +26,7 @@ class DatabaseConnection:
 			cursor = conn.cursor()
 			cursor.execute(query)
 			results = cursor.fetchall()
-			conn.commit()
+			# conn.commit()
 			conn.close()
 			return results
 

@@ -14,8 +14,8 @@ class main():
 
     def __init__(self):
         load_dotenv()
-        self.baseDb = argv[1].upper()
-        self.tgtDb = argv[2].upper()
+        self.baseDb = argv[1]
+        self.tgtDb = argv[2]
         self.baseDate = argv[3]
         self.tgtDate = argv[4]
         self.adv_id = argv[5]
@@ -30,6 +30,7 @@ class main():
         sql = sqlData.get(query).lower()
         advsql = self.setAdvertiserId(sql)
         finalSQL = self.setStartEndDate(advsql)
+        print(finalSQL)
         return DatabaseConnection(db, host, user, pwd,port).connectToPostgres(finalSQL)
 
 
@@ -45,7 +46,7 @@ class main():
             updateQueryTime = re.sub(r"< '2023-02-23 00:00:00'","< '{}'".format(eTime),updatedStartTime)
         elif "day" in updatedQuery.lower():
             updatedStartTime = re.sub(r">= '2023-02-22'", ">= '{}'".format(self.baseDate), updatedQuery)
-            updateQueryTime = re.sub(r"< '2023-02-23'", ">= '{}'".format(self.tgtDate), updatedStartTime)
+            updateQueryTime = re.sub(r"< '2023-03-01'", "< '{}'".format(self.tgtDate), updatedStartTime)
 
         return updateQueryTime
 
@@ -62,12 +63,12 @@ class main():
 
 
     def dataComp(self):
-        jsonObjectCore = self.readSql("core")
+        jsonObjectCore = self.readSql(self.baseDb)
         for keys in jsonObjectCore.keys():
             print(keys)
-            coreD = [data[0] for data in main().returnData(keys,"core")]
+            coreD = [data[0] for data in main().returnData(keys,self.baseDb)]
             print(coreD)
-            repD = [info[0] for info in main().returnData(keys,"report")]
+            repD = [info[0] for info in main().returnData(keys,self.tgtDb)]
             print(repD)
             missing = [data for data in repD if data not in coreD]
             common = [data for data in repD if data  in coreD]

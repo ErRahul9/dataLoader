@@ -27,7 +27,7 @@
     "sql7": "select count(distinct(private_marketplace_id)) from  sum_by_private_marketplace_by_day  where DAY >= '2023-02-22' and Day < '2023-02-23' and advertiser_id = 32286 and private_marketplace_id in ('-1') ",
     "sql8" : "select  sum(media_spend) from  sum_by_private_marketplace_by_day where  DAY >= '2023-02-22' and Day < '2023-02-23' group by advertiser_id having advertiser_id = 32725",
     "sql9" :    "select  sum(data_spend) from  sum_by_private_marketplace_by_day where  DAY >= '2023-02-22' and Day < '2023-02-23' group by advertiser_id having advertiser_id = 32725",
-    "sql10"  : "select  sum(platform_spend) from  sum_by_private_marketplace_by_day where  DAY >='2023-02-22' and Day < '2023-02-23' group by advertiser_id having advertiser_id = 32725",
+    "sql10"  : "select  sum(platform_spend) from  sum_by_private_marketplace_by_day where  DAY >= '2023-02-22' and Day < '2023-02-23' group by advertiser_id having advertiser_id = 32725",
     "sql11"  : "select  sum(media_cost) from  sum_by_private_marketplace_by_day where  DAY >= '2023-02-22' and Day < '2023-02-23' group by advertiser_id having advertiser_id = 32725",
     "sql12"  : "select  sum(data_cost) from  sum_by_private_marketplace_by_day where  DAY >= '2023-02-22' and Day < '2023-02-23' group by advertiser_id having advertiser_id = 32725",
     "sql13"  : "select  sum(fee_cost) from  sum_by_private_marketplace_by_day where  DAY >= '2023-02-22' and Day < '2023-02-23' group by advertiser_id having advertiser_id = 32725",
